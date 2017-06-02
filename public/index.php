@@ -1,11 +1,11 @@
 <?php
 
 namespace triagens\ArangoDb;
- 
+
 require dirname(__DIR__) . '/vendor/autoload.php';
- 
+
 $options =array(
-    ConnectionOptions::OPTION_ENDPOINT => 'tcp://test-arango:8529',
+    ConnectionOptions::OPTION_ENDPOINT => 'tcp://test.arangodb-arango:8529',
     ConnectionOptions::OPTION_AUTH_TYPE => 'Basic',
     ConnectionOptions::OPTION_AUTH_USER => 'root',
     ConnectionOptions::OPTION_AUTH_PASSWD => '',
@@ -15,7 +15,7 @@ $options =array(
     ConnectionOptions::OPTION_CREATE => true,
     ConnectionOptions::OPTION_UPDATE_POLICY => UpdatePolicy::LAST,
 );
- 
+
 // open connection
 $connection = new Connection($options);
 
@@ -23,13 +23,13 @@ $connection = new Connection($options);
 $collectionName = "firstCollection";
 $collection = new Collection($collectionName);
 $collectionHandler = new CollectionHandler($connection);
- 
+
 if ($collectionHandler->has($collectionName)) {
   // drops an existing collection with the same name to make
   // tutorial repeatable
   $collectionHandler->drop($collectionName);
 }
- 
+
 $collectionId = $collectionHandler->create($collection);
 $documentHandler = new DocumentHandler($connection);
 
@@ -41,12 +41,12 @@ var_dump($collectionId);
 $document = new Document();
 $document->set("a", "Foo");
 $document->set("b", "bar");
- 
+
 // save document in collection
 $documentId = $documentHandler->save($collectionName, $document);
 
 // execute AQL queries
-$query = 'FOR x IN firstCollection RETURN x._key'; 
+$query = 'FOR x IN firstCollection RETURN x._key';
 $statement = new Statement(
     $connection,
     array(
@@ -56,14 +56,14 @@ $statement = new Statement(
         "sanitize"  => true
     )
 );
- 
+
 $cursor = $statement->execute();
 $resultingDocuments = array();
- 
+
 foreach ($cursor as $key => $value) {
     $resultingDocuments[$key] = $value;
 }
- 
+
 var_dump($resultingDocuments);
 
 // read document
@@ -79,8 +79,8 @@ $document = $documentHandler->get($collectionName, $documentId);
 var_dump($document);
 
 // additional data via for-loop
-for ($i = 0; $i < 100; $i++) { 
-    $document = new Document(); 
+for ($i = 0; $i < 100; $i++) {
+    $document = new Document();
     $document->set("_key", "doc_" . $i . mt_rand());
     $val = false;
     if ($i%2 === 0) {
@@ -92,7 +92,7 @@ for ($i = 0; $i < 100; $i++) {
 
 // list all documents
 $documents = $collectionHandler->all($collectionId);
- 
+
 var_dump($documents);
 
 // remove
